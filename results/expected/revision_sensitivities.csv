@@ -1,0 +1,37 @@
+analysis,outcome,effect_measure,estimate,ci_lower,ci_upper,windows,patients,notes
+iap12_gee,iap12_next,or_per_1000_ml,1.1606935520,1.0513366334,1.2814254530,2188,771,patient-cluster sandwich
+ordinal_proportional_odds,wsacs_grade,common_or_per_1000_ml,1.1669025508,1.1093451446,1.2274462729,2188,771,patient-cluster sandwich
+partial_proportional_odds,wsacs_grade,common_or_per_1000_ml,1.1860468183,1.122,1.258,2188,771,patient-cluster bootstrap
+corrected_model4,iap_next,beta_per_1000_ml,0.3744174356,0.2859901161,0.4628447552,1758,655,corrected covariate freeze
+corrected_model4,iap15_next,or_per_1000_ml,1.3356606261,1.2267916136,1.4541909876,1758,655,corrected covariate freeze
+corrected_model4,iap20_next,or_per_1000_ml,1.3129338219,1.1873566543,1.4517922768,1758,655,corrected covariate freeze
+model4_plus_ph,iap_next,beta_per_1000_ml,0.3627677855,0.2710349235,0.4545006476,1702,627,common pH-complete sample
+model4_plus_ph,iap15_next,or_per_1000_ml,1.3200675732,1.2092432449,1.4410486931,1702,627,common pH-complete sample
+model4_plus_ph,iap20_next,or_per_1000_ml,1.3277569437,1.1952833425,1.4749126328,1702,627,common pH-complete sample
+spo2_mixed,iap_next,beta_per_1000_ml,0.2960820975,0.2209344194,0.3712297755,2095,744,time-varying SpO2
+spo2_mixed,iap15_next,or_per_1000_ml,1.2212496577,1.1360277757,1.3128646660,2095,744,time-varying SpO2
+spo2_mixed,iap20_next,or_per_1000_ml,1.2550290114,1.1558876667,1.3626737829,2095,744,time-varying SpO2
+spo2_gee,iap_next,beta_per_1000_ml,0.2960820975,0.2095867864,0.3825774086,2095,744,patient-cluster sandwich sensitivity
+spo2_gee,iap15_next,or_per_1000_ml,1.2143561304,1.1251604346,1.3106227042,2095,744,patient-cluster sandwich sensitivity
+expanded_comorbidity,iap_next,beta_per_1000_ml,0.2894392862,0.2153433410,0.3635352313,2188,771,audited convergence warning retained
+expanded_comorbidity,iap15_next,or_per_1000_ml,1.2139458162,1.1305903506,1.3034468619,2188,771,audited convergence warning retained
+expanded_comorbidity,iap20_next,or_per_1000_ml,1.2497004194,1.1519676672,1.3557248027,2188,771,audited convergence warning retained
+weight_normalized,iap_next,beta_per_10_ml_kg,0.2140518498,0.1584146327,0.2696890669,1866,659,
+weight_normalized,iap15_next,or_per_10_ml_kg,1.1648535252,1.1063688450,1.2264298126,1866,659,
+weight_normalized,iap20_next,or_per_10_ml_kg,1.1715463677,1.0998137323,1.2479575873,1866,659,
+exclude_pcd,iap_next,beta_per_1000_ml,0.2491773217,0.1668805507,0.3314740928,1302,497,
+exclude_pcd,iap15_next,or_per_1000_ml,1.2207046586,1.1087723315,1.3439367319,1302,497,
+exclude_crrt,iap_next,beta_per_1000_ml,0.3079386384,0.2125571108,0.4033201661,1468,530,
+exclude_crrt,iap15_next,or_per_1000_ml,1.3030747755,1.1857975722,1.4319508746,1468,530,
+shock_0,iap_next,beta_per_1000_ml,0.3772356994,0.2891149423,0.4653564565,1642,590,
+shock_0,iap15_next,or_per_1000_ml,1.3083981915,1.1956490096,1.4317795723,1642,590,
+shock_1,iap_next,beta_per_1000_ml,0.1251487786,-0.0230763526,0.2733739099,546,181,
+shock_1,iap15_next,or_per_1000_ml,1.0475547042,0.9202887483,1.1924201620,546,181,
+shock_interaction,iap_next,delta_beta,-0.1980671864,-0.3443274801,-0.0518068928,2188,771,p=0.00794
+shock_interaction,iap15_next,ratio_of_ors,0.7931686923,0.6856504945,0.9175470295,2188,771,p=0.00182
+iptw_standardized_risk,risk_below,risk,0.5274315358,0.4934427347,0.5610868744,2863,773,1000 patient bootstraps
+iptw_standardized_risk,risk_above,risk,0.5947997970,0.5610866640,0.6302793631,2863,773,1000 patient bootstraps
+iptw_standardized_risk,risk_difference,risk_difference,0.0673682611,0.0309916135,0.1070855601,2863,773,1000 patient bootstraps
+iptw_standardized_risk,risk_ratio,risk_ratio,1.1277289213,1.0564909096,1.2097737419,2863,773,1000 patient bootstraps
+repeated_threshold,repeated_iap12,or_per_1000_ml,1.2479381189,1.0765409678,1.4466235797,1726,770,
+repeated_threshold,repeated_iap15,or_per_1000_ml,1.2775977106,1.1522272482,1.4166093647,1726,770,

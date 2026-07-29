@@ -1,0 +1,7 @@
+Reproducible Analysis Code
+==========================
+
+Source commit: 3c1a56339c74b1e3292bfc69f5afc8188401d8a5
+Tracked source files: 47
+
+This archive contains source code, documentation, and aggregate non-identifying checkpoints. Participant-level data, private validation files, local configuration files, generated results, fitted models, and repository history are not included. See README.md for instructions and the reproducibility boundary.

@@ -1,0 +1,17 @@
+version,analysis,outcome,estimand,estimate,ci_lower,ci_upper,windows,patients
+validated_current_input,external_validation,iap_next,beta_per_1000_ml,0.1250541204,-0.0346797682,0.2847880089,684,171
+validated_current_input,external_validation,iap15_next,or_per_1000_ml,1.1392562557,0.9801270797,1.3242209537,684,171
+older_document_input,external_validation,iap_next,beta_per_1000_ml,0.112,-0.067,0.291,684,171
+older_document_input,external_validation,iap15_next,or_per_1000_ml,1.079,0.919,1.267,684,171
+validated,msm_stabilized,iap_next,mean_difference,0.6089781677,0.3050120157,0.9129443197,2863,773
+validated,msm_stabilized,iap15_next,or_high_vs_low,1.3185662926,1.1298946217,1.5387426709,2863,773
+validated,msm_truncated,iap_next,mean_difference,0.8384552698,0.5424059918,1.1345045477,2863,773
+validated,msm_truncated,iap15_next,or_high_vs_low,1.3616316689,1.1658038818,1.5903539444,2863,773
+historical_document_checkpoint,aipw_primary,iap_next,ate,0.941,,,2863,773
+historical_document_checkpoint,aipw_primary,iap15_next,odds_ratio,1.502,,,2863,773
+historical_document_checkpoint,aipw_extended,iap_next,ate,0.817,,,2188,771
+historical_document_checkpoint,aipw_extended,iap15_next,odds_ratio,1.471,,,2188,771
+validated_current_input,aipw_primary,iap_next,ate,0.9493763408,,,2863,773
+validated_current_input,aipw_primary,iap15_next,odds_ratio,1.5226294900,,,2863,773
+validated_current_input,aipw_extended,iap_next,ate,0.8196472826,,,2188,771
+validated_current_input,aipw_extended,iap15_next,odds_ratio,1.4949089864,,,2188,771

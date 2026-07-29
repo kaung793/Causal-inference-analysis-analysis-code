@@ -1,0 +1,13 @@
+version,exposure,outcome,overall_p,nonlinearity_p,inflection_ml,plateau_ml,windows,patients
+historical_document_checkpoint,fluid_intake_ml,iap_next,0.0169,0.2487,,,2188,771
+historical_document_checkpoint,fluid_intake_ml,iap15_next,0.0053,0.0069,2683,4365,2188,771
+historical_document_checkpoint,fluid_intake_ml,iap20_next,0.0262,0.4535,,,2188,771
+historical_document_checkpoint,estimated_fluid_balance_ml,iap_next,0.0000001,0.0101,1915,3096,2188,771
+historical_document_checkpoint,estimated_fluid_balance_ml,iap15_next,0.0000001,0.0091,1915,2742,2188,771
+historical_document_checkpoint,estimated_fluid_balance_ml,iap20_next,0.0000001,<0.001,1885,3096,2188,771
+validated_current_input,fluid_intake_ml,iap_next,0.0097879407,0.2173279939,,,2188,771
+validated_current_input,fluid_intake_ml,iap15_next,0.0024481561,0.0047850862,2683.0528,4446.9171,2188,771
+validated_current_input,fluid_intake_ml,iap20_next,0.0393740687,0.4957492250,,,2188,771
+validated_current_input,estimated_fluid_balance_ml,iap_next,0.000000000069,0.0098622180,1914.9128,3096.4405,2188,771
+validated_current_input,estimated_fluid_balance_ml,iap15_next,0.0000001724,0.0101367419,1914.9128,2919.2113,2188,771
+validated_current_input,estimated_fluid_balance_ml,iap20_next,0.0000000219,0.0006371215,1885.3746,3096.4405,2188,771

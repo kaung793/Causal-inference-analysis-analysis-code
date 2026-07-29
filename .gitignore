@@ -38,9 +38,25 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+.Rprofile
+
+# Local analysis configuration and non-public clinical data
+config/*.R
+!config/example_config.R
+data/*
+!data/README.md
+!data/schema/
+private_validation*/
+
+# Generated analysis artifacts
+results/generated/
+figures/generated/
+logs/
 
 # pkgdown site
 docs/
+!docs/
+!docs/*.md
 
 # translation temp files
 po/*~
