@@ -7,6 +7,7 @@ The validation run used:
 | R | 4.5.3 |
 | readxl | 1.4.5 |
 | lme4 | 2.0.1 |
+| lmerTest | 3.2.1 |
 | splines | 4.5.3 |
 | zoo | 1.8.15 |
 | sandwich | 3.1.1 |

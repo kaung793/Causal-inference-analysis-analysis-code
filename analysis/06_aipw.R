@@ -5,8 +5,8 @@ cli <- parse_cli_args(); cfg <- load_config(root, cli$config)
 if (skip_unless_enabled(isTRUE(cfg$run_aipw) || cli$force, "AIPW")) quit(save = "no", status = 0)
 out <- analysis_output_dir(cfg, "06_aipw")
 d0 <- prepare_primary(read_analysis_file(cfg$primary_long))
-cutoff <- median(d0$estimated_fluid_balance_ml, na.rm = TRUE)
-d0$high_balance <- as.integer(d0$estimated_fluid_balance_ml >= cutoff)
+cutoff <- median(d0$fluid_balance_ml, na.rm = TRUE)
+d0$high_balance <- as.integer(d0$fluid_balance_ml >= cutoff)
 
 estimate_aipw <- function(data, covars) {
   needed <- c("high_balance", "iap_next", "iap15_next", covars)

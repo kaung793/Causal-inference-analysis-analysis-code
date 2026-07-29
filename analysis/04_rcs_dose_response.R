@@ -5,7 +5,7 @@ cli <- parse_cli_args(); cfg <- load_config(root, cli$config)
 out <- analysis_output_dir(cfg, "04_rcs_dose_response")
 require_packages(c("splines", "zoo"))
 d <- prepare_primary(read_analysis_file(cfg$primary_long))
-needed <- c("fluid_intake_ml", "estimated_fluid_balance_ml", "iap_next", "iap15_next", "iap20_next",
+needed <- c("fluid_intake_ml", "fluid_balance_ml", "iap_next", "iap15_next", "iap20_next",
             "iap_current", "apache_ii", "age", "sex", "etiology", "creatinine", "map")
 d <- d[complete.cases(d[needed]), , drop = FALSE]
 
@@ -70,7 +70,7 @@ fit_rcs <- function(data, exposure, outcome, binary) {
   list(summary = summary, curve = curve, fit = fit, linear = linear)
 }
 
-specs <- expand.grid(exposure = c("fluid_intake_ml", "estimated_fluid_balance_ml"),
+specs <- expand.grid(exposure = c("fluid_intake_ml", "fluid_balance_ml"),
                      outcome = c("iap_next", "iap15_next", "iap20_next"), stringsAsFactors = FALSE)
 ans <- lapply(seq_len(nrow(specs)), function(i) fit_rcs(d, specs$exposure[i], specs$outcome[i], specs$outcome[i] != "iap_next"))
 summary <- do.call(rbind, lapply(ans, `[[`, "summary")); curves <- do.call(rbind, lapply(ans, `[[`, "curve"))

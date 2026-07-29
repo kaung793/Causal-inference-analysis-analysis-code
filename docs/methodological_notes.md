@@ -29,7 +29,7 @@ seed. The data are converted back to long form after imputation. Every model is
 fitted in every completed dataset, and estimates and variances are pooled with
 Rubin's rules; MICE events and mixed-model diagnostics are retained.
 
-For mediation, early cumulative estimated fluid balance is a trapezoidal AUC
+For mediation, early cumulative fluid balance is a trapezoidal AUC
 over Days 1-3. ACME, ADE, total effect, and their covariance are estimated
 within each completed dataset. The mediated proportion uses the pooled
 ACME-total covariance and a logit-scale delta interval to keep bounds between

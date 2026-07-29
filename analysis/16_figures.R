@@ -26,7 +26,7 @@ if (file.exists(primary_path)) {
 
 rcs_path <- file.path(cfg$output_dir, "04_rcs_dose_response", "rcs_prediction_curves.csv")
 if (file.exists(rcs_path)) {
-  x <- read.csv(rcs_path, check.names = FALSE); x$exposure_label <- ifelse(x$exposure == "fluid_intake_ml", "Fluid intake", "Estimated fluid balance")
+  x <- read.csv(rcs_path, check.names = FALSE); x$exposure_label <- ifelse(x$exposure == "fluid_intake_ml", "Fluid intake", "Fluid balance")
   p <- ggplot2::ggplot(x, ggplot2::aes(exposure_ml, effect, colour = exposure_label, fill = exposure_label)) +
     ggplot2::geom_ribbon(ggplot2::aes(ymin = ci_lower, ymax = ci_upper), alpha = .15, colour = NA) +
     ggplot2::geom_line(linewidth = .8) + ggplot2::facet_wrap(~outcome, scales = "free_y") +
@@ -34,13 +34,13 @@ if (file.exists(rcs_path)) {
   save_plot(p, "rcs_dose_response", 9, 6)
 }
 
-time_path <- file.path(cfg$output_dir, "07_time_window_heterogeneity", "preferred_converged_full_covariance_results.csv")
+time_path <- file.path(cfg$output_dir, "07_time_window_heterogeneity", "time_window_results.csv")
 if (file.exists(time_path)) {
   x <- read.csv(time_path, check.names = FALSE); x$window_label <- factor(x$window_label, levels = unique(x$window_label))
   p <- ggplot2::ggplot(x, ggplot2::aes(estimate, window_label)) +
     ggplot2::geom_errorbar(ggplot2::aes(xmin = ci_lower, xmax = ci_upper), orientation = "y", width = .18) + ggplot2::geom_point(size = 2.5) +
     ggplot2::facet_wrap(~outcome, scales = "free_x") + ggplot2::theme_bw(base_size = 10) + ggplot2::labs(x = NULL, y = NULL)
-  save_plot(p, "time_window_heterogeneity_corrected", 8, 4.5)
+  save_plot(p, "time_window_heterogeneity", 8, 4.5)
 }
 
 med_path <- file.path(cfg$output_dir, "09_mediation_mi_rubin", "mediation_mi_rubin_pooled_results.csv")

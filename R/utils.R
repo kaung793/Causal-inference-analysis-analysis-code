@@ -107,7 +107,7 @@ primary_aliases <- list(
   day = c("day", "start_day"),
   fluid_intake_ml = c("fluid_intake_ml", "fluid_t", "fluid_input_ml"),
   urine_output_ml = c("urine_output_ml", "urine_t", "urine_ml"),
-  estimated_fluid_balance_ml = c("estimated_fluid_balance_ml", "fluid_balance_t", "fluid_balance_ml"),
+  fluid_balance_ml = c("fluid_balance_ml", "estimated_fluid_balance_ml", "fluid_balance_t"),
   iap_current = c("iap_current", "iap_t", "iap_start"),
   iap_next = c("iap_next", "iap_end"),
   apache_ii = c("apache_ii", "apache_t", "apache"),
@@ -126,13 +126,13 @@ primary_aliases <- list(
 
 prepare_primary <- function(data) {
   d <- rename_aliases(data, primary_aliases)
-  required <- c("subject_id", "day", "fluid_intake_ml", "estimated_fluid_balance_ml",
+  required <- c("subject_id", "day", "fluid_intake_ml", "fluid_balance_ml",
                 "iap_current", "iap_next", "apache_ii", "creatinine", "map",
                 "age", "sex", "etiology")
   assert_columns(d, required, "primary longitudinal data")
   d$subject_id <- as.character(d$subject_id)
   numeric_vars <- intersect(c("day", "fluid_intake_ml", "urine_output_ml",
-                              "estimated_fluid_balance_ml", "iap_current", "iap_next",
+                              "fluid_balance_ml", "iap_current", "iap_next",
                               "apache_ii", "creatinine", "map", "sbp", "dbp", "age",
                               "weight_kg", "heart_rate", "albumin", "ph", "spo2", "shock", "pcd", "crrt"), names(d))
   for (v in numeric_vars) d[[v]] <- suppressWarnings(as.numeric(d[[v]]))
@@ -142,7 +142,7 @@ prepare_primary <- function(data) {
   d$iap15_next <- as.integer(d$iap_next >= 15)
   d$iap20_next <- as.integer(d$iap_next >= 20)
   d$fluid_intake_l <- d$fluid_intake_ml / 1000
-  d$estimated_fluid_balance_l <- d$estimated_fluid_balance_ml / 1000
+  d$fluid_balance_l <- d$fluid_balance_ml / 1000
   d[order(d$subject_id, d$day), , drop = FALSE]
 }
 

@@ -14,7 +14,7 @@ panel <- validate_panel(
   expected_days = c(1, 2, 3, 5), strict = strict
 )
 
-never_impute <- c("fluid_intake_ml", "estimated_fluid_balance_ml", "iap_current", "iap_next", "age", "sex", "etiology")
+never_impute <- c("fluid_intake_ml", "fluid_balance_ml", "iap_current", "iap_next", "age", "sex", "etiology")
 missing_never <- vapply(dat[never_impute], function(x) sum(is.na(x)), integer(1))
 if (strict && any(missing_never > 0L)) {
   stop("Observed exposure, outcome, or baseline fields contain missing values: ",
@@ -36,7 +36,7 @@ if (strict && any(lag_checks$max_absolute_difference > 1e-8, na.rm = TRUE)) stop
 
 balance_check <- data.frame(compared = 0L, median_absolute_difference_ml = NA_real_, max_absolute_difference_ml = NA_real_)
 if ("urine_output_ml" %in% names(dat)) {
-  delta <- dat$estimated_fluid_balance_ml - (dat$fluid_intake_ml - dat$urine_output_ml)
+  delta <- dat$fluid_balance_ml - (dat$fluid_intake_ml - dat$urine_output_ml)
   keep <- is.finite(delta)
   balance_check <- data.frame(compared = sum(keep), median_absolute_difference_ml = median(abs(delta[keep])),
                               max_absolute_difference_ml = max(abs(delta[keep])))

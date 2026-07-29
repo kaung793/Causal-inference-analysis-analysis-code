@@ -13,10 +13,10 @@ base_data <- merge_optional_fields(base_data, cfg$patient_flags, comorbidity_fie
 et <- suppressWarnings(as.numeric(as.character(base_data$etiology)))
 base_data$etiology <- factor(ifelse(et %in% c(4, 5), 4, et))
 
-revision_fields <- c("estimated_fluid_balance_ml", "iap_current", "iap_next", "apache_ii", "creatinine", "map",
+revision_fields <- c("fluid_balance_ml", "iap_current", "iap_next", "apache_ii", "creatinine", "map",
                      "age", "weight_kg", "heart_rate", "albumin", "ph", "spo2")
 corrected_data <- merge_optional_fields(base_data, cfg$revision_covariates, revision_fields, "revision covariates")
-corrected_data$estimated_fluid_balance_l <- corrected_data$estimated_fluid_balance_ml / 1000
+corrected_data$fluid_balance_l <- corrected_data$fluid_balance_ml / 1000
 corrected_data$iap12_next <- as.integer(corrected_data$iap_next >= 12)
 corrected_data$iap15_next <- as.integer(corrected_data$iap_next >= 15)
 corrected_data$iap20_next <- as.integer(corrected_data$iap_next >= 20)
@@ -44,21 +44,21 @@ if (all(comorbidity_fields %in% names(base_data))) {
 rows <- list(); diagnostics <- list(); fits <- list(); idx <- 0L
 for (scenario in names(scenarios)) for (outcome in c("iap_next", "iap15_next", "iap20_next")) {
   spec <- scenarios[[scenario]]; data <- datasets[[spec$dataset]]; binary <- outcome != "iap_next"
-  need <- c(outcome, "estimated_fluid_balance_l", "subject_id", spec$covars)
+  need <- c(outcome, "fluid_balance_l", "subject_id", spec$covars)
   z <- droplevels(data[complete.cases(data[need]), , drop = FALSE])
-  fixed_formula <- as.formula(paste(outcome, "~ estimated_fluid_balance_l +", paste(spec$covars, collapse = " + ")))
+  fixed_formula <- as.formula(paste(outcome, "~ fluid_balance_l +", paste(spec$covars, collapse = " + ")))
   if (spec$estimator == "mixed") {
     mixed_formula <- update(fixed_formula, . ~ . + (1 | subject_id))
     fit <- if (binary && isTRUE(spec$allow_warnings)) fit_glmm_audited(mixed_formula, z) else if (binary) fit_glmm_strict(mixed_formula, z) else fit_lmm_strict(mixed_formula, z)
-    e <- extract_effect(fit, "estimated_fluid_balance_l", exponentiate = binary)
+    e <- extract_effect(fit, "fluid_balance_l", exponentiate = binary)
     estimate <- unname(e["estimate"]); lower <- unname(e["ci_lower"]); upper <- unname(e["ci_upper"]); p <- unname(e["p_value"])
   } else {
     require_packages("geepack")
     fit <- geepack::geeglm(fixed_formula, id = subject_id, data = z, family = if (binary) binomial() else gaussian(),
                            corstr = "independence", std.err = "san.se")
     co <- summary(fit)$coefficients
-    b <- as.numeric(co["estimated_fluid_balance_l", "Estimate"]); se <- as.numeric(co["estimated_fluid_balance_l", "Std.err"])
-    p <- as.numeric(co["estimated_fluid_balance_l", "Pr(>|W|)"])
+    b <- as.numeric(co["fluid_balance_l", "Estimate"]); se <- as.numeric(co["fluid_balance_l", "Std.err"])
+    p <- as.numeric(co["fluid_balance_l", "Pr(>|W|)"])
     estimate <- if (binary) exp(b) else b; lower <- if (binary) exp(b - 1.96 * se) else b - 1.96 * se
     upper <- if (binary) exp(b + 1.96 * se) else b + 1.96 * se
   }
