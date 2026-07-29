@@ -6,8 +6,8 @@ if (skip_unless_enabled(isTRUE(cfg$run_msm) || cli$force, "MSM/IPTW")) quit(save
 out <- analysis_output_dir(cfg, "05_msm_iptw")
 require_packages(c("sandwich"))
 d <- prepare_primary(read_analysis_file(cfg$primary_long))
-cutoff <- median(d$estimated_fluid_balance_ml, na.rm = TRUE)
-d$high_balance <- as.integer(d$estimated_fluid_balance_ml >= cutoff)
+cutoff <- median(d$fluid_balance_ml, na.rm = TRUE)
+d$high_balance <- as.integer(d$fluid_balance_ml >= cutoff)
 vars <- c("high_balance", "age", "sex", "etiology", "iap_current", "apache_ii", "iap_next", "iap15_next", "day", "subject_id")
 d <- d[complete.cases(d[vars]), , drop = FALSE]
 

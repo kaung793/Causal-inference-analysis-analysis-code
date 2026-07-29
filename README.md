@@ -1,43 +1,39 @@
 # Fluid balance and intra-abdominal pressure: analysis code
 
-This repository contains the R code for the longitudinal, weighted, mediation,
-external-validation, and sensitivity analyses in the accompanying severe acute
-pancreatitis manuscript. Participant-level data are not included.
+This repository provides the R analysis workflows supporting the accompanying
+severe acute pancreatitis manuscript. Participant-level data are not included.
 
-## What this revision adds
+## Scope
 
-The original repository contained seven historical scripts with local paths and
-did not include many analyses added during peer review. This revision:
-
-- removes machine-specific paths, `setwd()`, package auto-installation, and
-  private filenames;
-- adds a documented data contract, portable configuration, ordered runner,
-  model diagnostics, run metadata, and aggregate checkpoints;
-- adds external validation, time-window heterogeneity, equal-lag models,
-  alternative IAP outcomes, additional adjustments, exclusions/subgroups,
-  standardized absolute risks, multiple imputation, repeated-threshold analyses,
-  and figure-source workflows;
-- implements mediation in every completed dataset and pools estimates and
-  covariance with Rubin's rules;
-- calculates window-specific intervals from the full coefficient covariance
-  matrix; and
-- keeps the seven historical root filenames as compatibility entry points.
-
-The compatibility files dispatch to the reviewed scripts under `analysis/`; the
-original implementations remain available in Git history.
+The ordered scripts cover input validation, descriptive summaries, primary
+mixed-effects models, external validation, dose-response analyses, weighting,
+AIPW, time-window analyses, equal-lag sensitivity analyses, multiple imputation,
+mediation, additional outcome definitions, subgroup analyses, and figure-source
+workflows.
 
 ## Repository layout
 
 ```text
-analysis/                 Ordered scripts 00-16
+analysis/                 Ordered analysis scripts 00-16
 R/                        Input, model, pooling, and QA helpers
 config/example_config.R   Portable paths and run settings
 data/README.md            Required files, schemas, and privacy boundary
-docs/                     Crosswalk, methods, environment, reconciliation notes
-results/expected/         Aggregate non-identifying checkpoints
+docs/                     Analysis crosswalk, methods, and software environment
 tests/static_checks.R     Dependency-free repository checks
 run_all.R                 Ordered runner
 ```
+
+Generated results, fitted models, run logs, and figures are written to ignored
+local directories and are not part of the public source tree.
+
+## Data terminology
+
+`fluid_balance_ml` is the canonical public variable name. It represents the
+study-specific fluid-balance measure defined from recorded fluid intake and
+urine output. It should not be interpreted as complete physiological net fluid
+balance because other losses and net ultrafiltration are not fully captured.
+The input layer continues to accept the historical aliases
+`estimated_fluid_balance_ml` and `fluid_balance_t`.
 
 ## Quick start
 
@@ -45,7 +41,7 @@ run_all.R                 Ordered runner
    [`docs/software_environment.md`](docs/software_environment.md).
 2. Prepare only institutionally authorized, de-identified data using
    [`data/README.md`](data/README.md).
-3. Copy `config/example_config.R` to `config/local_config.R` and update local
+3. Copy `config/example_config.R` to `config/local_config.R` and update the local
    paths. The local file is ignored by Git.
 4. Validate the inputs:
 
@@ -53,43 +49,41 @@ run_all.R                 Ordered runner
 Rscript analysis/00_validate_inputs.R --config=config/local_config.R
 ```
 
-5. Run all analyses enabled in the configuration:
+5. Run the analyses enabled in the configuration:
 
 ```sh
 Rscript run_all.R --config=config/local_config.R
 ```
 
-An individual analysis can be run directly, for example:
+An individual analysis can also be run directly:
 
 ```sh
 Rscript analysis/07_time_window_heterogeneity.R --config=config/local_config.R
-Rscript analysis/09_mediation_mi_rubin.R --config=config/local_config.R
+Rscript analysis/09_mediation_mi_rubin.R --config=config/local_config.R --force
 ```
 
-Long MI and bootstrap analyses are disabled in the example configuration. The
-`--force` option runs one selected disabled script after input validation.
+Long multiple-imputation and bootstrap analyses are disabled in the example
+configuration. The `--force` option runs one selected disabled analysis after
+input preparation.
 
 ## Reproducibility boundary
 
-Every completed analysis records input MD5 hashes, dimensions, seeds, and R
-session information. Scripts fail on missing required columns and do not
-silently replace a mixed model with ordinary regression. Singular fits and
-convergence messages are retained in diagnostic output.
+Completed analyses record input hashes, dimensions, seeds, and R session
+information. Scripts fail on missing required columns and retain mixed-model
+convergence and singularity diagnostics. Numerical reproduction additionally
+requires the authorized frozen input files described in the data contract.
 
-`results/expected/` contains aggregate checkpoints only; it is not a substitute
-for source data. Some files deliberately contain both a historical document
-checkpoint and a validated recomputation because several differences arose from
-input versions, covariance calculations, or the earlier mediation workflow. Do
-not mix values across those labels. Review
-[`docs/reconciliation_notes.md`](docs/reconciliation_notes.md) before changing
-manuscript numbers, figures, or legends.
+For a formal release, cite a fixed Git tag rather than the moving `main` branch.
+Release archives and their checksums should be attached to the corresponding
+GitHub Release rather than committed to the source tree.
 
 ## Privacy
 
 Do not commit participant-level data, local configurations, run metadata,
-fitted models, or generated results. The `.gitignore` excludes those locations
-by default. Data access is governed by the manuscript's Data Availability
-statement and applicable institutional approvals.
+fitted models, generated results, or figures. The `.gitignore` excludes the
+standard local locations for these artifacts. Data access remains governed by
+the manuscript's Data Availability statement and applicable institutional
+approvals.
 
 ## License
 

@@ -7,7 +7,7 @@ d <- prepare_primary(read_analysis_file(cfg$primary_long))
 d <- scale_covariates(d, c("iap_current", "apache_ii", "age", "creatinine", "map"))
 
 specs <- expand.grid(
-  exposure = c("fluid_intake_l", "estimated_fluid_balance_l"),
+  exposure = c("fluid_intake_l", "fluid_balance_l"),
   outcome = c("iap_next", "iap15_next", "iap20_next"),
   model = 1:3, stringsAsFactors = FALSE
 )
@@ -25,7 +25,7 @@ for (i in seq_len(nrow(specs))) {
   effect <- extract_effect(fit, s$exposure, exponentiate = binary)
   used <- model.frame(fit)
   rows[[i]] <- data.frame(
-    exposure = ifelse(s$exposure == "fluid_intake_l", "Fluid intake", "Estimated fluid balance"),
+    exposure = ifelse(s$exposure == "fluid_intake_l", "Fluid intake", "Fluid balance"),
     outcome = s$outcome, model = paste0("Model ", s$model), effect_measure = ifelse(binary, "OR per 1,000 mL", "beta mmHg per 1,000 mL"),
     estimate = effect["estimate"], ci_lower = effect["ci_lower"], ci_upper = effect["ci_upper"], p_value = effect["p_value"],
     windows = nrow(used), patients = length(unique(as.character(used$subject_id))),

@@ -1,4 +1,0 @@
-analysis,exposure,outcome,effect_measure,estimate,ci_lower,ci_upper,patients,windows,m
-model3_mi_rubin,estimated_fluid_balance_ml,iap_next,beta_per_1000_ml,0.317,0.257,0.377,801,3204,20
-model3_mi_rubin,estimated_fluid_balance_ml,iap15_next,or_per_1000_ml,1.236,1.163,1.313,801,3204,20
-model3_mi_rubin,estimated_fluid_balance_ml,iap20_next,or_per_1000_ml,1.266,1.177,1.362,801,3204,20

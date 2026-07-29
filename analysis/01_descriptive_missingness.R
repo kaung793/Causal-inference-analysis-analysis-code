@@ -5,7 +5,7 @@ cli <- parse_cli_args(); cfg <- load_config(root, cli$config)
 out <- analysis_output_dir(cfg, "01_descriptive_missingness")
 d <- prepare_primary(read_analysis_file(cfg$primary_long))
 
-vars <- c("fluid_intake_ml", "estimated_fluid_balance_ml", "iap_current", "iap_next", "apache_ii", "creatinine", "map")
+vars <- c("fluid_intake_ml", "fluid_balance_ml", "iap_current", "iap_next", "apache_ii", "creatinine", "map")
 by_day <- do.call(rbind, lapply(sort(unique(d$day)), function(day_value) {
   z <- d[d$day == day_value, , drop = FALSE]
   do.call(rbind, lapply(vars, function(v) data.frame(

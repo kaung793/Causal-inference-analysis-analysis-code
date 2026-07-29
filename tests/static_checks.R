@@ -6,7 +6,7 @@ fail <- function(...) stop(..., call. = FALSE)
 
 required <- c(
   "README.md", "config/example_config.R", "data/README.md",
-  "docs/analysis_crosswalk.md", "docs/reconciliation_notes.md",
+  "docs/analysis_crosswalk.md", "docs/methodological_notes.md",
   "docs/software_environment.md", "run_all.R"
 )
 missing <- required[!file.exists(file.path(root, required))]
@@ -17,6 +17,16 @@ expected_scripts <- sprintf("%02d", 0:16)
 observed_scripts <- substr(basename(analysis_files), 1, 2)
 if (!identical(observed_scripts, expected_scripts)) {
   fail("Expected one ordered analysis script for every ID 00-16")
+}
+
+deprecated_root_scripts <- c(
+  "aipw_analysis.R", "aipw_analysis_extended.R", "causal_mediation_analysis.R",
+  "main_association_analysis_per1000ml.R", "msm_step1_iptw_construction.R",
+  "msm_step3_outcome_models.R", "rcs_revised_threshold_analysis.R"
+)
+remaining_deprecated <- deprecated_root_scripts[file.exists(file.path(root, deprecated_root_scripts))]
+if (length(remaining_deprecated)) {
+  fail("Deprecated compatibility entry point(s) remain: ", paste(remaining_deprecated, collapse = ", "))
 }
 
 root_r <- list.files(root, pattern = "[.]R$", full.names = TRUE)
@@ -48,15 +58,15 @@ for (path in scan_files) {
   if (length(hits)) fail("Nonportable pattern in ", basename(path), ": ", paste(hits, collapse = ", "))
 }
 
-expected_dir <- file.path(root, "results", "expected")
-expected_files <- list.files(expected_dir, pattern = "[.]csv$", full.names = TRUE)
-if (length(expected_files) < 6L) fail("Expected aggregate reconciliation CSVs are missing")
-for (path in expected_files) {
-  x <- tryCatch(read.csv(path, check.names = FALSE), error = function(e) {
-    fail("Could not parse aggregate checkpoint ", basename(path), ": ", conditionMessage(e))
-  })
-  if (!nrow(x)) fail("Aggregate checkpoint is empty: ", basename(path))
-  if ("subject_id" %in% names(x)) fail("Participant-level identifier found in expected result: ", basename(path))
+analysis_text <- paste(vapply(analysis_files, function(path) {
+  paste(readLines(path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+}, character(1)), collapse = "\n")
+if (grepl("estimated_fluid_balance_(ml|l)", analysis_text, perl = TRUE)) {
+  fail("Analysis scripts must use canonical fluid_balance_ml/fluid_balance_l names")
+}
+utils_text <- paste(readLines(file.path(root, "R", "utils.R"), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+if (!grepl('fluid_balance_ml = c\\("fluid_balance_ml", "estimated_fluid_balance_ml", "fluid_balance_t"\\)', utils_text)) {
+  fail("Historical fluid-balance aliases are not preserved in the input layer")
 }
 
 data_files <- list.files(file.path(root, "data"), recursive = TRUE, full.names = TRUE)
@@ -65,4 +75,4 @@ allowed_data <- normalizePath(file.path(root, "data", "README.md"), winslash = "
 unexpected_data <- setdiff(normalizePath(data_files, winslash = "/", mustWork = TRUE), allowed_data)
 if (length(unexpected_data)) fail("Unexpected file under data/: ", paste(basename(unexpected_data), collapse = ", "))
 
-cat("PASS: R syntax, portable-path, repository-structure, and aggregate-data checks\n")
+cat("PASS: R syntax, canonical naming, portable paths, repository structure, and data-boundary checks\n")

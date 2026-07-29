@@ -16,10 +16,10 @@ z <- scale_covariates(z, c("iap_current", "apache_ii", "age", "creatinine", "map
 
 rows <- list(); fits <- list(); diagnostics <- list()
 for (outcome in c("repeated_iap12", "repeated_iap15")) {
-  need <- c(outcome, "estimated_fluid_balance_l", "iap_current_z", "apache_ii_z", "age_z", "sex", "etiology", "creatinine_z", "map_z", "subject_id")
+  need <- c(outcome, "fluid_balance_l", "iap_current_z", "apache_ii_z", "age_z", "sex", "etiology", "creatinine_z", "map_z", "subject_id")
   a <- droplevels(z[complete.cases(z[need]), , drop = FALSE])
-  f <- as.formula(paste(outcome, "~ estimated_fluid_balance_l + iap_current_z + apache_ii_z + age_z + sex + etiology + creatinine_z + map_z + (1 | subject_id)"))
-  fit <- fit_glmm_strict(f, a); e <- extract_effect(fit, "estimated_fluid_balance_l", exponentiate = TRUE)
+  f <- as.formula(paste(outcome, "~ fluid_balance_l + iap_current_z + apache_ii_z + age_z + sex + etiology + creatinine_z + map_z + (1 | subject_id)"))
+  fit <- fit_glmm_strict(f, a); e <- extract_effect(fit, "fluid_balance_l", exponentiate = TRUE)
   rows[[outcome]] <- data.frame(outcome = outcome, effect_measure = "OR per 1,000 mL", estimate = e["estimate"],
     ci_lower = e["ci_lower"], ci_upper = e["ci_upper"], p_value = e["p_value"], windows = nrow(a),
     patients = length(unique(a$subject_id)), events = sum(a[[outcome]]), event_percent = 100 * mean(a[[outcome]]))

@@ -4,8 +4,8 @@ Participant-level data are not distributed in this repository. To reproduce the
 analyses, place locally authorized files under `data/` and copy
 `config/example_config.R` to `config/local_config.R`.
 
-Files may be CSV, TSV, XLS/XLSX, or RDS. Column aliases used by the historical
-analysis files are accepted, but the canonical names below are preferred.
+Files may be CSV, TSV, XLS/XLSX, or RDS. Column aliases used by legacy
+data exports are accepted, but the canonical names below are preferred.
 
 ## `longitudinal_primary`
 
@@ -19,7 +19,7 @@ Required columns:
 | `subject_id` | `analysis_id`, `id` | De-identified patient identifier |
 | `day` | `start_day` | Start day of the observation window: 1, 2, 3, or 5 |
 | `fluid_intake_ml` | `fluid_t`, `fluid_input_ml` | Fluid intake during the exposure window, mL |
-| `estimated_fluid_balance_ml` | `fluid_balance_t`, `fluid_balance_ml` | Estimated fluid balance during the exposure window, mL |
+| `fluid_balance_ml` | `estimated_fluid_balance_ml`, `fluid_balance_t` | Fluid balance during the exposure window, mL |
 | `iap_current` | `iap_t`, `iap_start` | IAP at the start of the window, mmHg |
 | `iap_next` | `iap_end` | IAP at the end of the window, mmHg |
 | `apache_ii` | `apache_t`, `apache` | APACHE II score at the start of the window |
@@ -32,6 +32,10 @@ Required columns:
 Optional columns used by revision analyses include `urine_output_ml`,
 `weight_kg`, `heart_rate`, `albumin`, `ph`, `spo2`, `shock`, `pcd`, and `crrt`.
 Threshold outcomes are derived from `iap_next` and need not be supplied.
+
+`fluid_balance_ml` is the study-specific measure calculated from recorded fluid
+intake and urine output. It does not represent complete physiological net fluid
+balance because other losses and net ultrafiltration are not fully captured.
 
 ## `longitudinal_primary_preimputation`
 
@@ -55,7 +59,7 @@ silently combined with a later primary-data correction.
 
 `revision_covariates` is an optional subject-day file used for adjudicated
 corrections such as albumin, pH, or MAP. It must contain `subject_id` and `day`.
-Supported fields include `estimated_fluid_balance_ml`, `iap_current`,
+Supported fields include `fluid_balance_ml`, `iap_current`,
 `iap_next`, `apache_ii`, `creatinine`, `map`, `age`, `weight_kg`,
 `heart_rate`, `albumin`, `ph`, and `spo2`. Supplemental nonmissing values take
 precedence, and duplicate subject-day keys cause an error.
@@ -73,7 +77,7 @@ One row per patient. Required columns are `subject_id`, `fluid_auc`, `iap_day5`,
 `iap_day1`, `age`, `sex`, `etiology`, `apache`, `creatinine`, `map`, and
 `death_hospital`.
 
-`fluid_auc` is the trapezoidal area under the estimated-fluid-balance curve from
+`fluid_auc` is the trapezoidal area under the fluid-balance curve from
 Day 1 through Day 3, in mL-day:
 
 ```text
@@ -85,10 +89,11 @@ covariates are multiply imputed inside the mediation script.
 
 ## `equal_lag_long`
 
-One row per patient and equal two-day window. Required columns are `subject_id`,
-`window_start`, `window_end`, `fluid_balance_ml`, `iap_start`, `iap_end`,
-`apache_start`, `creatinine_start`, `map_start`, `age`, `sex`, and `etiology`.
-The expected windows are Day 1 to 3, Day 3 to 5, and Day 5 to 7.
+One row per patient and equal two-day window. This file uses the same canonical
+fields as the primary longitudinal data. Required columns are `subject_id`, `day`
+(start day: 1, 3, or 5), `fluid_intake_ml`, `fluid_balance_ml`, `iap_current`,
+`iap_next`, `apache_ii`, `creatinine`, `map`, `age`, `sex`, and `etiology`.
+The corresponding intervals are Day 1 to 3, Day 3 to 5, and Day 5 to 7.
 
 ## `patient_flags`
 

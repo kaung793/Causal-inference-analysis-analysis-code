@@ -13,7 +13,7 @@ validate_panel(d, cfg$expected_primary_patients, cfg$expected_primary_windows, c
 days <- c(1L, 2L, 3L, 5L)
 if (!all(table(d$subject_id) == length(days))) stop("Model 3 MI requires four rows per patient.")
 assert_columns(d, c("sbp", "dbp"), "Model 3 MI source")
-non_imputed <- c("fluid_intake_ml", "estimated_fluid_balance_ml", "iap_current", "iap_next",
+non_imputed <- c("fluid_intake_ml", "fluid_balance_ml", "iap_current", "iap_next",
                  "age", "sex", "etiology")
 if (anyNA(d[non_imputed])) stop("Exposure, IAP, or complete baseline predictors unexpectedly contain missing values.")
 
@@ -55,7 +55,7 @@ wide <- data.frame(
 )
 wide_specs <- c(
   fluid_t = "fluid_intake_ml",
-  fluid_balance_t = "estimated_fluid_balance_ml",
+  fluid_balance_t = "fluid_balance_ml",
   apache_t = "apache_ii",
   cr_t = "creatinine",
   map_t = "map"
@@ -107,7 +107,7 @@ to_long <- function(w) {
       analysis_id = factor(w$analysis_id),
       day = day_value,
       fluid_intake_l = w[[paste0("fluid_t_d", day_value)]] / 1000,
-      estimated_fluid_balance_l = w[[paste0("fluid_balance_t_d", day_value)]] / 1000,
+      fluid_balance_l = w[[paste0("fluid_balance_t_d", day_value)]] / 1000,
       iap_current = w[[paste0("iap_d", day_value)]],
       iap_next = w[[paste0("iap_d", next_day[as.character(day_value)])]],
       apache_ii = w[[paste0("apache_t_d", day_value)]],
@@ -129,7 +129,7 @@ to_long <- function(w) {
   z
 }
 
-specs <- expand.grid(exposure = c("fluid_intake_l", "estimated_fluid_balance_l"),
+specs <- expand.grid(exposure = c("fluid_intake_l", "fluid_balance_l"),
                      outcome = c("iap_next", "iap15_next", "iap20_next"), stringsAsFactors = FALSE)
 per <- list(); diag <- list(); idx <- 0L
 for (i in seq_len(cfg$mi_m)) {

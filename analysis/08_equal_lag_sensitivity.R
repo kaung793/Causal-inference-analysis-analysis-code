@@ -12,14 +12,14 @@ if (isTRUE(cfg$strict_cohort_checks) && (nrow(d) != 2403L || length(unique(d$sub
 
 fit_equal_model <- function(data, outcome) {
   z <- scale_covariates(data, c("iap_current", "apache_ii", "age", "creatinine", "map"))
-  needed <- c(outcome, "estimated_fluid_balance_l", "window", "iap_current_z", "apache_ii_z", "age_z", "sex", "etiology", "creatinine_z", "map_z", "subject_id")
+  needed <- c(outcome, "fluid_balance_l", "window", "iap_current_z", "apache_ii_z", "age_z", "sex", "etiology", "creatinine_z", "map_z", "subject_id")
   z <- z[complete.cases(z[needed]), , drop = FALSE]
-  rhs_full <- "estimated_fluid_balance_l * window + iap_current_z + apache_ii_z + age_z + sex + etiology + creatinine_z + map_z + (1 | subject_id)"
-  rhs_reduced <- "estimated_fluid_balance_l + window + iap_current_z + apache_ii_z + age_z + sex + etiology + creatinine_z + map_z + (1 | subject_id)"
+  rhs_full <- "fluid_balance_l * window + iap_current_z + apache_ii_z + age_z + sex + etiology + creatinine_z + map_z + (1 | subject_id)"
+  rhs_reduced <- "fluid_balance_l + window + iap_current_z + apache_ii_z + age_z + sex + etiology + creatinine_z + map_z + (1 | subject_id)"
   binary <- outcome != "iap_next"
   full <- if (binary) fit_glmm_strict(as.formula(paste(outcome, "~", rhs_full)), z) else fit_lmm_strict(as.formula(paste(outcome, "~", rhs_full)), z)
   reduced <- if (binary) fit_glmm_strict(as.formula(paste(outcome, "~", rhs_reduced)), z) else fit_lmm_strict(as.formula(paste(outcome, "~", rhs_reduced)), z)
-  rows <- list(); main <- "estimated_fluid_balance_l"
+  rows <- list(); main <- "fluid_balance_l"
   for (w in levels(z$window)) {
     it <- paste0(main, ":window", w); terms <- setNames(1, main)
     if (w != levels(z$window)[1L]) terms <- c(terms, setNames(1, it))
@@ -54,7 +54,7 @@ write_csv_atomic(cc_diag, file.path(out, "complete_case_diagnostics.csv")); save
 
 if (isTRUE(cfg$run_equal_lag_mi)) {
   base <- d[!duplicated(d$subject_id), c("subject_id", "age", "sex", "etiology")]
-  tv <- c("fluid_intake_ml", "estimated_fluid_balance_ml", "iap_current", "iap_next", "apache_ii", "creatinine", "map")
+  tv <- c("fluid_intake_ml", "fluid_balance_ml", "iap_current", "iap_next", "apache_ii", "creatinine", "map")
   wide <- base
   for (w in levels(d$window)) {
     z <- d[d$window == w, c("subject_id", tv), drop = FALSE]
@@ -72,7 +72,7 @@ if (isTRUE(cfg$run_equal_lag_mi)) {
       z
     })
     z <- do.call(rbind, parts); z$window <- factor(z$window, levels = levels(d$window)); z$sex <- factor(z$sex); z$etiology <- factor(z$etiology)
-    z$estimated_fluid_balance_l <- z$estimated_fluid_balance_ml / 1000
+    z$fluid_balance_l <- z$fluid_balance_ml / 1000
     z$iap15_next <- as.integer(z$iap_next >= 15); z$iap20_next <- as.integer(z$iap_next >= 20)
     z
   }
@@ -95,7 +95,7 @@ if (isTRUE(cfg$run_equal_lag_mi)) {
   pooled$ci_upper_display <- ifelse(pooled$binary, exp(pooled$ci_upper), pooled$ci_upper)
   globals <- list()
   for (o in outcomes) {
-    fits <- mi_fits[[o]]; ints <- grep("estimated_fluid_balance_l:window", names(fixed_coef(fits[[1L]])), value = TRUE, fixed = TRUE)
+    fits <- mi_fits[[o]]; ints <- grep("fluid_balance_l:window", names(fixed_coef(fits[[1L]])), value = TRUE, fixed = TRUE)
     Q <- t(vapply(fits, function(f) fixed_coef(f)[ints], numeric(length(ints))))
     U <- array(NA_real_, c(length(ints), length(ints), length(fits)))
     for (i in seq_along(fits)) U[, , i] <- vcov(fits[[i]])[ints, ints, drop = FALSE]
