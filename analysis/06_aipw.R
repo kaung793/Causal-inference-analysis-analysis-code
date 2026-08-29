@@ -3,6 +3,10 @@ root <- normalizePath(file.path(dirname(sub("^--file=", "", file_arg[[1L]])), ".
 source(file.path(root, "R", "utils.R"))
 cli <- parse_cli_args(); cfg <- load_config(root, cli$config)
 if (skip_unless_enabled(isTRUE(cfg$run_aipw) || cli$force, "AIPW")) quit(save = "no", status = 0)
+# This is the portable current-input implementation. The second-round
+# manuscript's frozen AIPW analysis is reproduced separately by
+# release/01_manuscript_aipw.R because it used a dedicated input freeze and
+# patient-cluster bootstrap resampling.
 out <- analysis_output_dir(cfg, "06_aipw")
 d0 <- prepare_primary(read_analysis_file(cfg$primary_long))
 cutoff <- median(d0$estimated_fluid_balance_ml, na.rm = TRUE)

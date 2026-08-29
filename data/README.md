@@ -98,6 +98,30 @@ primary longitudinal file. Expanded-comorbidity analyses additionally accept
 `smoking`, `drinking`, `hypertension`, `diabetes`,
 `hyperlipidemia_history`, and `copd`.
 
+## Optional second-round manuscript-release freezes
+
+The manuscript release runner uses explicit analysis-specific paths so that a
+later general-purpose data correction cannot silently change an earlier,
+documented analysis. These files remain private and are never committed.
+
+- `rcs_manuscript_long`: longitudinal file following the primary schema that
+  generated the RCS values in Figure 4, Figure S9, and Table S14.
+- `time_window_manuscript_long`: longitudinal file following the primary schema
+  that generated the archived Table 4/Figure 5 output.
+- `aipw_manuscript_weights`: one row per eligible subject-window with
+  `subject_id`, `day`, `high_fluid_balance`, `fluid_balance_t`, `age`, `sex`,
+  `etiology`, `iap_t`, `apache_t`, and `IAH15_next`.
+- `aipw_manuscript_long`: the matching longitudinal file with `subject_id`,
+  `day`, `fluid_balance_t`, `age`, `sex`, `etiology`, `iap_t`, `apache_t`,
+  `cr_t`, `map_t`, and `iap_next`.
+
+The AIPW release contract contains 773 patients/2,863 windows in the primary
+scenario and 771 patients/2,188 windows in the extended scenario. It uses the
+stored numeric sex and etiology codes exactly as in the frozen workflow, seed
+123, and 1,000 patient-cluster bootstrap resamples. The RCS release contract
+contains 771 patients/2,188 complete windows. Authorized local files should
+match the SHA-256 values in `results/manuscript_release_v2/input_checksums.csv`.
+
 ## Privacy and validation
 
 Use only de-identified, institutionally authorized data. Do not commit local

@@ -4,26 +4,31 @@
 
 The original root scripts preserve an important historical trace, but they used
 machine-specific paths and did not cover analyses added during revision. The
-portable pipeline separates two questions:
+portable pipeline separates three questions:
 
 1. What values were carried forward in the revision documents?
 2. What values are produced by a fully specified, diagnostically acceptable
    rerun on a named input version?
+3. Which named input and implementation supplied each component of the
+   second-round submission?
 
 Aggregate checkpoints for both questions are stored in `results/expected/`.
-Every actual run also records input hashes and software versions. Values from
-different input hashes must not be combined.
+The third question is answered by `results/manuscript_release_v2/`. Every actual
+run records input hashes and software versions. Analysis-specific freezes are
+permitted only when their roles and hashes are explicit; rows from different
+freezes are not pooled into one estimator.
 
 ## Items requiring explicit synchronization
 
 ### Primary mixed models
 
-The historical binary models fitted the unscaled adjustment variables and
-emitted convergence or identifiability warnings. The portable implementation
-uses an algebraically equivalent scaled parameterization and requires a
-successful optimizer. Rounded Model 3 conclusions are unchanged, although some
-unrounded ORs differ slightly. The diagnostics file, rather than only the
-coefficient table, is part of the result.
+The historical binary models fitted unscaled adjustment variables and emitted
+convergence or identifiability warnings. The portable current-input
+implementation uses an algebraically equivalent scaled parameterization and
+requires a successful optimizer. The manuscript's rounded display is frozen in
+`manuscript_key_results.csv`; higher-precision current estimates and diagnostics
+remain available. The diagnostics file, rather than only the coefficient table,
+is part of the result.
 
 ### External validation
 
@@ -42,8 +47,12 @@ the main-effect and interaction variances while omitting their covariance.
 
 The historical binary interaction fit also had convergence warnings. The
 portable scaled fit gives ORs of 1.031, 1.155, 1.350, and 1.328 across the four
-windows. Figure legends and tables should identify the complete-case sample and
-use one internally consistent set of estimates and intervals.
+windows, compared with the archived document values of 1.031, 1.153, 1.343,
+and 1.321. These small differences are sensitive to the `lme4` runtime and do
+not change inference. `release/02_manuscript_time_window.R` emits the current
+runtime reconstruction, the full-covariance companion, and diagnostics;
+`release/03_check_manuscript_release.R` verifies prespecified concordance to the
+archived exact aggregate output.
 
 ### Model 3 multiple imputation
 
@@ -70,12 +79,17 @@ conclusion, and response letter must use the same declared analysis.
 
 ### AIPW and RCS
 
-AIPW point estimates are sensitive to the frozen longitudinal input version.
-The portable script emits both row-bootstrap intervals, for compatibility, and
-patient-cluster bootstrap intervals, as the recommended dependence-aware
-sensitivity. RCS curve-derived values are descriptive features, not validated
-physiological or treatment thresholds. The three fluid-balance inflection
-features near 1,900 mL are reproduced.
+AIPW point estimates are sensitive to the longitudinal input version. The
+generic current-input script remains available for audit, while
+`release/01_manuscript_aipw.R` reproduces the Table 3 values from the dedicated
+weight and longitudinal freezes using seed 123 and 1,000 patient-cluster
+bootstrap resamples. The release verifier requires exact equality within
+floating-point tolerance.
+
+RCS values in the revision documents came from a named earlier longitudinal
+freeze. `analysis/04_rcs_dose_response.R` accepts `rcs_manuscript_long` for this
+purpose and reproduces its aggregate contract exactly. Curve-derived points are
+descriptive features, not physiological or treatment thresholds.
 
 ## Release checklist
 
@@ -84,6 +98,8 @@ features near 1,900 mL are reproduced.
 - Run `analysis/00_validate_inputs.R` before inferential scripts.
 - Review every nonempty convergence message and every singular-fit flag.
 - Compare generated aggregate outputs with `results/expected/`.
+- Run `release/03_check_manuscript_release.R` and review every verification
+  class in `results/manuscript_release_v2/release_manifest.csv`.
 - Synchronize the manuscript, supplement, figures, abstract, and response
   letter before merging or tagging a release.
 - Never commit participant-level data, local configuration, fitted models, or

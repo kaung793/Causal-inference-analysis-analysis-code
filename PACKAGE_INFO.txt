@@ -1,7 +1,12 @@
 Reproducible Analysis Code
 ==========================
 
-Source commit: 3c1a56339c74b1e3292bfc69f5afc8188401d8a5
-Tracked source files: 47
+Release label: manuscript-second-round-20260830
+Tracked source and aggregate-contract files: 60
 
-This archive contains source code, documentation, and aggregate non-identifying checkpoints. Participant-level data, private validation files, local configuration files, generated results, fitted models, and repository history are not included. See README.md for instructions and the reproducibility boundary.
+The Git tag resolves the exact source commit. This release contains source code,
+documentation, and aggregate non-identifying checkpoints. Participant-level
+data, private validation files, local configuration files, generated results,
+and fitted models are not included. See README.md and
+results/manuscript_release_v2/README.md for the execution instructions and the
+reproducibility boundary.

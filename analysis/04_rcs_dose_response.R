@@ -4,7 +4,8 @@ source(file.path(root, "R", "utils.R"))
 cli <- parse_cli_args(); cfg <- load_config(root, cli$config)
 out <- analysis_output_dir(cfg, "04_rcs_dose_response")
 require_packages(c("splines", "zoo"))
-d <- prepare_primary(read_analysis_file(cfg$primary_long))
+input_path <- cfg$rcs_manuscript_long %||% cfg$primary_long
+d <- prepare_primary(read_analysis_file(input_path))
 needed <- c("fluid_intake_ml", "estimated_fluid_balance_ml", "iap_next", "iap15_next", "iap20_next",
             "iap_current", "apache_ii", "age", "sex", "etiology", "creatinine", "map")
 d <- d[complete.cases(d[needed]), , drop = FALSE]
@@ -77,4 +78,4 @@ summary <- do.call(rbind, lapply(ans, `[[`, "summary")); curves <- do.call(rbind
 write_csv_atomic(summary, file.path(out, "rcs_tests_and_exploratory_inflections.csv"))
 write_csv_atomic(curves, file.path(out, "rcs_prediction_curves.csv"))
 saveRDS(lapply(ans, function(x) x[c("fit", "linear")]), file.path(out, "fitted_models.rds"), compress = "xz")
-write_run_metadata(cfg, cfg$primary_long, out, list(complete_case_windows = nrow(d), complete_case_patients = length(unique(d$subject_id))))
+write_run_metadata(cfg, input_path, out, list(complete_case_windows = nrow(d), complete_case_patients = length(unique(d$subject_id))))

@@ -24,3 +24,10 @@ analysis difficult to audit and may silently change package versions.
 Required packages by analysis are checked at runtime. Each completed analysis
 writes `session_info.txt`, input MD5 hashes, seed settings, and key sample
 dimensions to its generated output directory.
+
+The archived binary time-window fit is mildly package-version sensitive. The
+second-round release therefore preserves the exact aggregate document output,
+reruns the model in the environment above, reports convergence diagnostics, and
+checks that the runtime estimates remain within the prespecified tolerances in
+`release/03_check_manuscript_release.R`. AIPW and RCS release outputs reproduce
+exactly in the environment above when the named private freezes are supplied.

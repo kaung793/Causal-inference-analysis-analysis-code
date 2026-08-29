@@ -10,6 +10,15 @@ config <- list(
   equal_lag_long = "data/equal_lag.csv",
   patient_flags = "data/patient_flags.csv",
   revision_covariates = "data/revision_covariates.csv",
+
+  # Optional analysis-specific freezes used by the manuscript-release runner.
+  # Keep these NULL for an ordinary current-input run. Set them only to the
+  # authorized, de-identified files documented in data/README.md.
+  rcs_manuscript_long = NULL,
+  time_window_manuscript_long = NULL,
+  aipw_manuscript_weights = NULL,
+  aipw_manuscript_long = NULL,
+
   output_dir = "results/generated",
   figure_dir = "figures/generated",
 
@@ -39,10 +48,13 @@ config <- list(
   run_model3_mi = FALSE,
   run_revision_sensitivities = FALSE,
   run_figures = TRUE,
+  run_manuscript_release = FALSE,
 
-  # The manuscript AIPW intervals used row-level bootstrap resampling. The
-  # patient-cluster bootstrap is also emitted as a recommended sensitivity.
+  # The generic current-input AIPW script can emit both interval types. The
+  # manuscript-release AIPW path uses 1,000 patient-cluster resamples.
   aipw_bootstrap_units = c("row", "patient"),
+  manuscript_aipw_seed = 123L,
+  manuscript_aipw_bootstrap_reps = 1000L,
 
   # Input data are expected to have already passed source-record adjudication.
   # Strict mode enforces the manuscript cohort dimensions and key invariants.

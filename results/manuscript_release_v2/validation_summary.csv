@@ -1,0 +1,4 @@
+component,verification_class,checks,failures,max_absolute_difference,max_allowed_tolerance,validation_environment
+AIPW,exact rerun from dedicated freeze,18,0,0,0.00000001,R 4.5.3
+RCS,exact rerun from dedicated freeze,24,0,0,0.000001,R 4.5.3
+time-window,archived document output plus package-sensitive runtime concordance,32,0,0.0109623763381301,0.02,R 4.5.3 and lme4 2.0.1

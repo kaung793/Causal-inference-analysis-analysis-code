@@ -27,3 +27,15 @@ and should be rechecked if that package is reordered.
 `run_all.R` executes the scripts in this order. Long MI and bootstrap analyses
 are controlled by the configuration flags so that an accidental default run
 does not launch hours of computation.
+
+## Second-round manuscript-release entries
+
+| Script | Role | Release output |
+|---|---|---|
+| `release/01_manuscript_aipw.R` | Reproduces the Table 3 AIPW estimates from the dedicated weight/longitudinal freezes with 1,000 patient-cluster resamples | `results/manuscript_release_v2/aipw.csv` |
+| `release/02_manuscript_time_window.R` | Reconstructs the archived Table 4 display intervals and emits full-covariance companion intervals and diagnostics | `results/manuscript_release_v2/time_window.csv` |
+| `release/03_check_manuscript_release.R` | Exact AIPW/RCS checks and package-sensitive time-window concordance checks | Generated verification summary |
+| `run_manuscript_release.R` | Ordered release runner for the core and release-specific analyses | Run-status log plus generated outputs |
+
+The complete document-to-code mapping and input roles are in
+`results/manuscript_release_v2/release_manifest.csv`.

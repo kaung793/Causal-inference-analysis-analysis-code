@@ -7,7 +7,12 @@ fail <- function(...) stop(..., call. = FALSE)
 required <- c(
   "README.md", "config/example_config.R", "data/README.md",
   "docs/analysis_crosswalk.md", "docs/reconciliation_notes.md",
-  "docs/software_environment.md", "run_all.R"
+  "docs/software_environment.md", "run_all.R", "run_manuscript_release.R",
+  "release/01_manuscript_aipw.R", "release/02_manuscript_time_window.R",
+  "release/03_check_manuscript_release.R",
+  "results/manuscript_release_v2/README.md",
+  "results/manuscript_release_v2/release_manifest.csv",
+  "results/manuscript_release_v2/input_checksums.csv"
 )
 missing <- required[!file.exists(file.path(root, required))]
 if (length(missing)) fail("Missing required repository file(s): ", paste(missing, collapse = ", "))
@@ -20,9 +25,10 @@ if (!identical(observed_scripts, expected_scripts)) {
 }
 
 root_r <- list.files(root, pattern = "[.]R$", full.names = TRUE)
+release_r <- list.files(file.path(root, "release"), pattern = "[.]R$", full.names = TRUE)
 r_files <- c(
   list.files(file.path(root, "R"), pattern = "[.]R$", full.names = TRUE),
-  analysis_files, root_r, file.path(root, "tests", "static_checks.R")
+  analysis_files, release_r, root_r, file.path(root, "tests", "static_checks.R")
 )
 for (path in unique(r_files)) {
   tryCatch(parse(file = path), error = function(e) {
@@ -32,7 +38,7 @@ for (path in unique(r_files)) {
 
 scan_files <- c(
   list.files(file.path(root, "analysis"), pattern = "[.]R$", full.names = TRUE),
-  root_r, file.path(root, "config", "example_config.R")
+  release_r, root_r, file.path(root, "config", "example_config.R")
 )
 forbidden <- c(
   "setwd[[:space:]]*[(]",
@@ -58,6 +64,19 @@ for (path in expected_files) {
   if (!nrow(x)) fail("Aggregate checkpoint is empty: ", basename(path))
   if ("subject_id" %in% names(x)) fail("Participant-level identifier found in expected result: ", basename(path))
 }
+
+release_dir <- file.path(root, "results", "manuscript_release_v2")
+release_files <- list.files(release_dir, pattern = "[.]csv$", full.names = TRUE)
+if (length(release_files) < 6L) fail("Manuscript-release aggregate contract is incomplete")
+for (path in release_files) {
+  x <- tryCatch(read.csv(path, check.names = FALSE), error = function(e) {
+    fail("Could not parse manuscript-release file ", basename(path), ": ", conditionMessage(e))
+  })
+  if (!nrow(x)) fail("Manuscript-release file is empty: ", basename(path))
+  if ("subject_id" %in% names(x)) fail("Participant-level identifier found in release result: ", basename(path))
+}
+hashes <- read.csv(file.path(release_dir, "input_checksums.csv"), check.names = FALSE)
+if (!all(grepl("^[A-F0-9]{64}$", hashes$sha256))) fail("Invalid SHA-256 value in input_checksums.csv")
 
 data_files <- list.files(file.path(root, "data"), recursive = TRUE, full.names = TRUE)
 data_files <- data_files[!dir.exists(data_files)]

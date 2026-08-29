@@ -47,7 +47,9 @@ load_config <- function(root = find_repo_root(), config_path = NULL) {
   cfg <- env$config
   path_keys <- c("primary_long", "revision_primary_long", "model3_mi_long",
                  "external_long", "mediation_patient", "equal_lag_long", "patient_flags",
-                 "revision_covariates", "output_dir", "figure_dir")
+                 "revision_covariates", "rcs_manuscript_long", "time_window_manuscript_long",
+                 "aipw_manuscript_weights", "aipw_manuscript_long",
+                 "output_dir", "figure_dir")
   for (key in intersect(path_keys, names(cfg))) cfg[[key]] <- resolve_repo_path(cfg[[key]], root)
   cfg$repo_root <- root
   cfg$config_file <- normalizePath(path, winslash = "/", mustWork = TRUE)

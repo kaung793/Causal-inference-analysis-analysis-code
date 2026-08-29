@@ -20,7 +20,10 @@ did not include many analyses added during peer review. This revision:
 - implements mediation in every completed dataset and pools estimates and
   covariance with Rubin's rules;
 - calculates window-specific intervals from the full coefficient covariance
-  matrix; and
+  matrix;
+- adds a versioned second-round manuscript result contract, analysis-specific
+  input hashes, a dedicated patient-cluster AIPW rerun, and an automated
+  release verifier; and
 - keeps the seven historical root filenames as compatibility entry points.
 
 The compatibility files dispatch to the reviewed scripts under `analysis/`; the
@@ -34,9 +37,12 @@ R/                        Input, model, pooling, and QA helpers
 config/example_config.R   Portable paths and run settings
 data/README.md            Required files, schemas, and privacy boundary
 docs/                     Crosswalk, methods, environment, reconciliation notes
+release/                  Manuscript-specific reruns and release verification
 results/expected/         Aggregate non-identifying checkpoints
+results/manuscript_release_v2/  Selected second-round result contract
 tests/static_checks.R     Dependency-free repository checks
 run_all.R                 Ordered runner
+run_manuscript_release.R  Second-round manuscript release runner
 ```
 
 ## Quick start
@@ -66,6 +72,22 @@ Rscript analysis/07_time_window_heterogeneity.R --config=config/local_config.R
 Rscript analysis/09_mediation_mi_rubin.R --config=config/local_config.R
 ```
 
+To verify the result set used in the second-round submission, configure the
+analysis-specific private freezes described in `data/README.md`, set
+`run_manuscript_release=TRUE`, and run:
+
+```sh
+Rscript run_manuscript_release.R --config=config/local_config.R
+```
+
+The three release-specific checks can also be run separately:
+
+```sh
+Rscript release/01_manuscript_aipw.R --config=config/local_config.R
+Rscript release/02_manuscript_time_window.R --config=config/local_config.R
+Rscript release/03_check_manuscript_release.R --config=config/local_config.R
+```
+
 Long MI and bootstrap analyses are disabled in the example configuration. The
 `--force` option runs one selected disabled script after input validation.
 
@@ -76,13 +98,19 @@ session information. Scripts fail on missing required columns and do not
 silently replace a mixed model with ordinary regression. Singular fits and
 convergence messages are retained in diagnostic output.
 
-`results/expected/` contains aggregate checkpoints only; it is not a substitute
-for source data. Some files deliberately contain both a historical document
-checkpoint and a validated recomputation because several differences arose from
-input versions, covariance calculations, or the earlier mediation workflow. Do
-not mix values across those labels. Review
-[`docs/reconciliation_notes.md`](docs/reconciliation_notes.md) before changing
-manuscript numbers, figures, or legends.
+`results/expected/` contains the broader audit history. The exact set selected
+for the second-round documents is stated separately in
+[`results/manuscript_release_v2/`](results/manuscript_release_v2/), including
+the analysis entry point, private-input hash, and verification class for each
+component. This makes analysis-specific freezes explicit instead of asking a
+reader to infer a release by combining historical labels.
+
+The time-window document retained its archived variance-sum display intervals;
+the release script also emits full-covariance intervals and model diagnostics.
+The manuscript AIPW estimates are reproduced from their dedicated freeze using
+1,000 patient-cluster bootstrap resamples. Review
+[`docs/reconciliation_notes.md`](docs/reconciliation_notes.md) for the complete
+scientific and computational boundary.
 
 ## Privacy
 
