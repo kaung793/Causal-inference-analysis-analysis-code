@@ -34,13 +34,13 @@ if (file.exists(rcs_path)) {
   save_plot(p, "rcs_dose_response", 9, 6)
 }
 
-time_path <- file.path(cfg$output_dir, "07_time_window_heterogeneity", "preferred_converged_full_covariance_results.csv")
+time_path <- file.path(cfg$output_dir, "07_time_window_heterogeneity", "time_window_results.csv")
 if (file.exists(time_path)) {
   x <- read.csv(time_path, check.names = FALSE); x$window_label <- factor(x$window_label, levels = unique(x$window_label))
   p <- ggplot2::ggplot(x, ggplot2::aes(estimate, window_label)) +
     ggplot2::geom_errorbar(ggplot2::aes(xmin = ci_lower, xmax = ci_upper), orientation = "y", width = .18) + ggplot2::geom_point(size = 2.5) +
     ggplot2::facet_wrap(~outcome, scales = "free_x") + ggplot2::theme_bw(base_size = 10) + ggplot2::labs(x = NULL, y = NULL)
-  save_plot(p, "time_window_heterogeneity_corrected", 8, 4.5)
+  save_plot(p, "time_window_heterogeneity", 8, 4.5)
 }
 
 med_path <- file.path(cfg$output_dir, "09_mediation_mi_rubin", "mediation_mi_rubin_pooled_results.csv")

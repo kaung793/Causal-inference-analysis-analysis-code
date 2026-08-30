@@ -1,129 +1,72 @@
-# Data contract
+# Input data
 
-Participant-level data are not distributed in this repository. To reproduce the
-analyses, place locally authorized files under `data/` and copy
-`config/example_config.R` to `config/local_config.R`.
+Participant-level data are not distributed with the code. Place de-identified,
+institutionally authorized files under `data/` and set their paths in
+`config/local_config.R`. CSV, TSV, XLS/XLSX, and RDS files are supported.
 
-Files may be CSV, TSV, XLS/XLSX, or RDS. Column aliases used by the historical
-analysis files are accepted, but the canonical names below are preferred.
+## Primary longitudinal file
 
-## `longitudinal_primary`
+The primary file has one row per patient and observation window. The full panel
+contains 801 patients and 3,204 windows beginning on Days 1, 2, 3, and 5.
 
-One row per patient and observation window. The validated primary panel contains
-801 patients and 3,204 windows before complete-case restrictions.
-
-Required columns:
-
-| Canonical name | Historical aliases | Definition |
+| Variable | Accepted aliases | Description |
 |---|---|---|
 | `subject_id` | `analysis_id`, `id` | De-identified patient identifier |
-| `day` | `start_day` | Start day of the observation window: 1, 2, 3, or 5 |
-| `fluid_intake_ml` | `fluid_t`, `fluid_input_ml` | Fluid intake during the exposure window, mL |
-| `estimated_fluid_balance_ml` | `fluid_balance_t`, `fluid_balance_ml` | Estimated fluid balance during the exposure window, mL |
-| `iap_current` | `iap_t`, `iap_start` | IAP at the start of the window, mmHg |
-| `iap_next` | `iap_end` | IAP at the end of the window, mmHg |
-| `apache_ii` | `apache_t`, `apache` | APACHE II score at the start of the window |
-| `creatinine` | `cr_t`, `cr` | Creatinine at the start of the window |
-| `map` | `map_t`, `map_repaired` | Mean arterial pressure at the start of the window |
-| `age` | - | Age in years |
+| `day` | `start_day` | Start day of the observation window |
+| `fluid_intake_ml` | `fluid_t`, `fluid_input_ml` | Recorded 24-hour fluid intake |
+| `estimated_fluid_balance_ml` | `fluid_balance_t`, `fluid_balance_ml` | Intake minus urine output |
+| `iap_current` | `iap_t`, `iap_start` | Daily maximum IAP at the start of the window |
+| `iap_next` | `iap_end` | Daily maximum IAP at the subsequent retained assessment |
+| `apache_ii` | `apache_t`, `apache` | APACHE II score |
+| `creatinine` | `cr_t`, `cr` | Serum creatinine |
+| `map` | `map_t`, `map_repaired` | Mean arterial pressure |
+| `age` |  | Age in years |
 | `sex` | `sex_code` | Sex category |
-| `etiology` | `etiology_code` | Etiology category |
+| `etiology` | `etiology_code` | Pancreatitis etiology |
 
-Optional columns used by revision analyses include `urine_output_ml`,
-`weight_kg`, `heart_rate`, `albumin`, `ph`, `spo2`, `shock`, `pcd`, and `crrt`.
-Threshold outcomes are derived from `iap_next` and need not be supplied.
+Additional analyses may use `urine_output_ml`, `weight_kg`, `heart_rate`,
+`albumin`, `ph`, `spo2`, `shock`, `pcd`, and `crrt`. Binary IAP
+outcomes are derived from `iap_next`.
 
-## `longitudinal_primary_preimputation`
+The optional `rcs_long` and `time_window_long` files use the same structure.
+If their configuration values are `NULL`, the primary longitudinal file is used.
 
-This is the adjudicated pre-imputation derivation-data freeze used only for the
-patient-level wide-format Model 3 MICE sensitivity analysis. It follows the
-primary schema and must additionally retain `sbp`/`sbp_t` and `dbp`/`dbp_t`.
-The script reconstructs the one pre-identified Day 3 MAP record from observed
-SBP and DBP without exposing a subject identifier.
+## Other analysis files
 
-Keep this input distinct from later analysis-ready freezes: the imputation
-model uses a nonduplicated Day 1/2/3/5/7 IAP sequence, four etiology categories,
-20 imputations, 20 iterations, five predictive-mean-matching donors, and the
-analysis-specific seed recorded in `config/example_config.R`.
+- `longitudinal_revision`: longitudinal data used for the additional sensitivity
+  analyses; it follows the primary-file structure.
+- `revision_covariates`: optional subject-day file containing `subject_id`,
+  `day`, and corrected covariate values.
+- `longitudinal_external`: external-cohort data with `subject_id`, `day`,
+  `fluid_intake_ml`, `iap_current`, `iap_next`, `map`, `age`, `sex`,
+  and `etiology`. It contains 171 patients and 684 windows.
+- `longitudinal_primary_preimputation`: primary longitudinal data before
+  multiple imputation; it also retains systolic and diastolic blood pressure.
+- `equal_lag_long`: one row per patient and two-day window, with
+  `subject_id`, `window_start`, `window_end`, `fluid_balance_ml`,
+  `iap_start`, `iap_end`, `apache_start`, `creatinine_start`,
+  `map_start`, `age`, `sex`, and `etiology`.
+- `mediation_patient`: one row per patient with `subject_id`, `fluid_auc`,
+  `iap_day5`, `iap_day1`, `age`, `sex`, `etiology`, `apache`,
+  `creatinine`, `map`, and `death_hospital`.
+- `patient_flags`: optional patient-level indicators for subgroup and exclusion
+  analyses.
 
-## `longitudinal_revision` and `revision_covariates`
-
-`longitudinal_revision` is the frozen longitudinal source used by analyses that
-were added during peer review. It follows the primary schema. Keeping its path
-separate prevents results from an earlier reviewer-analysis freeze from being
-silently combined with a later primary-data correction.
-
-`revision_covariates` is an optional subject-day file used for adjudicated
-corrections such as albumin, pH, or MAP. It must contain `subject_id` and `day`.
-Supported fields include `estimated_fluid_balance_ml`, `iap_current`,
-`iap_next`, `apache_ii`, `creatinine`, `map`, `age`, `weight_kg`,
-`heart_rate`, `albumin`, `ph`, and `spo2`. Supplemental nonmissing values take
-precedence, and duplicate subject-day keys cause an error.
-
-## `longitudinal_external`
-
-One row per patient and observation window. The validated external panel contains
-171 patients and 684 windows. Required columns are `subject_id`, `day`,
-`fluid_intake_ml`, `iap_current`, `iap_next`, `map`, `age`, `sex`, and
-`etiology`. The binary IAP outcomes are derived from `iap_next`.
-
-## `mediation_patient`
-
-One row per patient. Required columns are `subject_id`, `fluid_auc`, `iap_day5`,
-`iap_day1`, `age`, `sex`, `etiology`, `apache`, `creatinine`, `map`, and
-`death_hospital`.
-
-`fluid_auc` is the trapezoidal area under the estimated-fluid-balance curve from
-Day 1 through Day 3, in mL-day:
+For the mediation analysis, `fluid_auc` is the trapezoidal area under the
+Day 1-Day 3 fluid-balance curve:
 
 ```text
 fluid_auc = (Day1 + Day2) / 2 + (Day2 + Day3) / 2
 ```
 
-The exposure, mediator, and outcome are observed rather than imputed. Missing
-covariates are multiply imputed inside the mediation script.
+## AIPW files
 
-## `equal_lag_long`
+`aipw_weights` contains one row per eligible patient-window and the variables
+`subject_id`, `day`, `high_fluid_balance`, `fluid_balance_t`, `age`,
+`sex`, `etiology`, `iap_t`, `apache_t`, and `IAH15_next`.
 
-One row per patient and equal two-day window. Required columns are `subject_id`,
-`window_start`, `window_end`, `fluid_balance_ml`, `iap_start`, `iap_end`,
-`apache_start`, `creatinine_start`, `map_start`, `age`, `sex`, and `etiology`.
-The expected windows are Day 1 to 3, Day 3 to 5, and Day 5 to 7.
+`aipw_long` contains the corresponding longitudinal records with `subject_id`,
+`day`, `fluid_balance_t`, `age`, `sex`, `etiology`, `iap_t`,
+`apache_t`, `cr_t`, `map_t`, and `iap_next`.
 
-## `patient_flags`
-
-Optional one-row-per-patient file keyed by `subject_id`. It may contain `shock`,
-`pcd`, and `crrt` indicators when these variables are not already present in the
-primary longitudinal file. Expanded-comorbidity analyses additionally accept
-`smoking`, `drinking`, `hypertension`, `diabetes`,
-`hyperlipidemia_history`, and `copd`.
-
-## Optional second-round manuscript-release freezes
-
-The manuscript release runner uses explicit analysis-specific paths so that a
-later general-purpose data correction cannot silently change an earlier,
-documented analysis. These files remain private and are never committed.
-
-- `rcs_manuscript_long`: longitudinal file following the primary schema that
-  generated the RCS values in Figure 4, Figure S9, and Table S14.
-- `time_window_manuscript_long`: longitudinal file following the primary schema
-  that generated the archived Table 4/Figure 5 output.
-- `aipw_manuscript_weights`: one row per eligible subject-window with
-  `subject_id`, `day`, `high_fluid_balance`, `fluid_balance_t`, `age`, `sex`,
-  `etiology`, `iap_t`, `apache_t`, and `IAH15_next`.
-- `aipw_manuscript_long`: the matching longitudinal file with `subject_id`,
-  `day`, `fluid_balance_t`, `age`, `sex`, `etiology`, `iap_t`, `apache_t`,
-  `cr_t`, `map_t`, and `iap_next`.
-
-The AIPW release contract contains 773 patients/2,863 windows in the primary
-scenario and 771 patients/2,188 windows in the extended scenario. It uses the
-stored numeric sex and etiology codes exactly as in the frozen workflow, seed
-123, and 1,000 patient-cluster bootstrap resamples. The RCS release contract
-contains 771 patients/2,188 complete windows. Authorized local files should
-match the SHA-256 values in `results/manuscript_release_v2/input_checksums.csv`.
-
-## Privacy and validation
-
-Use only de-identified, institutionally authorized data. Do not commit local
-data, configuration files, run metadata, fitted models, or generated results.
-Run `analysis/00_validate_inputs.R` before any inferential analysis.
+Local data and configuration files should not be committed to the repository.

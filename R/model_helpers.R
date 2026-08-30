@@ -62,7 +62,7 @@ fit_glmm_strict <- function(formula, data) {
   stop("GLMM did not pass strict convergence checks: ", paste(unlist(attempts), collapse = " || "))
 }
 
-fit_glmm_audited <- function(formula, data) {
+fit_glmm_with_warnings <- function(formula, data) {
   require_packages("lme4")
   fit <- lme4::glmer(
     formula, data = data, family = stats::binomial(), nAGQ = 1,

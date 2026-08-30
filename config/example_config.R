@@ -1,5 +1,4 @@
-# Copy this file to config/local_config.R for local use.
-# Paths may be absolute or relative to the repository root.
+# Copy this file to config/local_config.R and update the local data paths.
 
 config <- list(
   primary_long = "data/longitudinal_primary.csv",
@@ -11,13 +10,13 @@ config <- list(
   patient_flags = "data/patient_flags.csv",
   revision_covariates = "data/revision_covariates.csv",
 
-  # Optional analysis-specific freezes used by the manuscript-release runner.
-  # Keep these NULL for an ordinary current-input run. Set them only to the
-  # authorized, de-identified files documented in data/README.md.
-  rcs_manuscript_long = NULL,
-  time_window_manuscript_long = NULL,
-  aipw_manuscript_weights = NULL,
-  aipw_manuscript_long = NULL,
+  # These may be left NULL when the primary longitudinal file is used.
+  rcs_long = NULL,
+  time_window_long = NULL,
+
+  # Analysis-ready files used by the AIPW analysis.
+  aipw_weights = "data/aipw_weights.csv",
+  aipw_long = "data/longitudinal_aipw.csv",
 
   output_dir = "results/generated",
   figure_dir = "figures/generated",
@@ -37,26 +36,17 @@ config <- list(
   model3_mi_seed = 20260716L,
   model3_mi_map_reconstruction_day = 3L,
   model3_mi_map_reconstruction_n = 1L,
-  parallel_workers = 1L,
+  aipw_seed = 123L,
+  aipw_bootstrap_reps = 1000L,
 
   run_external_validation = FALSE,
   run_msm = TRUE,
   run_aipw = FALSE,
-  run_time_window_mi = FALSE,
   run_equal_lag_mi = FALSE,
   run_mediation = FALSE,
   run_model3_mi = FALSE,
   run_revision_sensitivities = FALSE,
   run_figures = TRUE,
-  run_manuscript_release = FALSE,
 
-  # The generic current-input AIPW script can emit both interval types. The
-  # manuscript-release AIPW path uses 1,000 patient-cluster resamples.
-  aipw_bootstrap_units = c("row", "patient"),
-  manuscript_aipw_seed = 123L,
-  manuscript_aipw_bootstrap_reps = 1000L,
-
-  # Input data are expected to have already passed source-record adjudication.
-  # Strict mode enforces the manuscript cohort dimensions and key invariants.
   strict_cohort_checks = TRUE
 )

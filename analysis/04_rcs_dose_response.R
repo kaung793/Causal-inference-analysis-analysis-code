@@ -4,7 +4,7 @@ source(file.path(root, "R", "utils.R"))
 cli <- parse_cli_args(); cfg <- load_config(root, cli$config)
 out <- analysis_output_dir(cfg, "04_rcs_dose_response")
 require_packages(c("splines", "zoo"))
-input_path <- cfg$rcs_manuscript_long %||% cfg$primary_long
+input_path <- cfg$rcs_long %||% cfg$primary_long
 d <- prepare_primary(read_analysis_file(input_path))
 needed <- c("fluid_intake_ml", "estimated_fluid_balance_ml", "iap_next", "iap15_next", "iap20_next",
             "iap_current", "apache_ii", "age", "sex", "etiology", "creatinine", "map")

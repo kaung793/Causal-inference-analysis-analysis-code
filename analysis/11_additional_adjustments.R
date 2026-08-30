@@ -49,7 +49,7 @@ for (scenario in names(scenarios)) for (outcome in c("iap_next", "iap15_next", "
   fixed_formula <- as.formula(paste(outcome, "~ estimated_fluid_balance_l +", paste(spec$covars, collapse = " + ")))
   if (spec$estimator == "mixed") {
     mixed_formula <- update(fixed_formula, . ~ . + (1 | subject_id))
-    fit <- if (binary && isTRUE(spec$allow_warnings)) fit_glmm_audited(mixed_formula, z) else if (binary) fit_glmm_strict(mixed_formula, z) else fit_lmm_strict(mixed_formula, z)
+    fit <- if (binary && isTRUE(spec$allow_warnings)) fit_glmm_with_warnings(mixed_formula, z) else if (binary) fit_glmm_strict(mixed_formula, z) else fit_lmm_strict(mixed_formula, z)
     e <- extract_effect(fit, "estimated_fluid_balance_l", exponentiate = binary)
     estimate <- unname(e["estimate"]); lower <- unname(e["ci_lower"]); upper <- unname(e["ci_upper"]); p <- unname(e["p_value"])
   } else {
@@ -62,7 +62,7 @@ for (scenario in names(scenarios)) for (outcome in c("iap_next", "iap15_next", "
     estimate <- if (binary) exp(b) else b; lower <- if (binary) exp(b - 1.96 * se) else b - 1.96 * se
     upper <- if (binary) exp(b + 1.96 * se) else b + 1.96 * se
   }
-  estimator_label <- if (isTRUE(spec$allow_warnings)) "mixed; audited convergence warnings retained" else spec$estimator
+  estimator_label <- if (isTRUE(spec$allow_warnings)) "mixed; convergence warnings retained" else spec$estimator
   idx <- idx + 1L
   rows[[idx]] <- data.frame(scenario = scenario, estimator = estimator_label, data_version = spec$dataset, outcome = outcome,
                             effect_measure = ifelse(binary, "OR per 1,000 mL", "beta per 1,000 mL"),

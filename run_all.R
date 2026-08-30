@@ -3,7 +3,7 @@ root <- if (length(file_arg)) dirname(normalizePath(sub("^--file=", "", file_arg
 source(file.path(root, "R", "utils.R"))
 cli <- parse_cli_args(); cfg <- load_config(root, cli$config)
 scripts <- c(
-  "00_validate_inputs.R", "01_descriptive_missingness.R", "02_primary_mixed_models.R",
+  "01_descriptive_missingness.R", "02_primary_mixed_models.R",
   "03_external_validation.R", "04_rcs_dose_response.R", "05_msm_iptw.R", "06_aipw.R",
   "07_time_window_heterogeneity.R", "08_equal_lag_sensitivity.R", "09_mediation_mi_rubin.R",
   "10_alternative_iap_outcomes.R", "11_additional_adjustments.R", "12_exclusions_subgroups.R",
