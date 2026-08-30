@@ -15,7 +15,8 @@ Participant-level data are not included.
 
 ## Software
 
-The analyses were run with R 4.5.3. Required packages are `lme4`, `lmerTest`,
+The analyses were run with R 4.5.3 and `lme4` 2.0.1. Mixed-model estimates may
+show small numerical differences with other package versions. Required packages are `lme4`, `lmerTest`,
 `sandwich`, `mice`, `mediation`, `geepack`, `ordinal`, `zoo`, and
 `ggplot2`. The `readxl` package is also needed when Excel input files are used.
 
